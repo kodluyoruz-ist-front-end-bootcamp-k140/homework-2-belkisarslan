@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Button } from "../button"
 import { FormItem } from "../form-item"
+import Pagination from "../pagination/pagination"
 
 export function DataGrid() {
 
@@ -9,9 +10,17 @@ export function DataGrid() {
 
   const [todo, setTodo] = useState(null)
 
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemPerPage, setitemPerPage] = useState(50)
+
   useEffect(() => {
     loadData()
   }, [])
+
+  const indexOfLastitem = currentPage * itemPerPage;
+  const indexOfFirstitem = indexOfLastitem - itemPerPage;
+  const currentitem = items.slice(indexOfFirstitem, indexOfLastitem);
+  const totalPagesNum = Math.ceil(items.length / itemPerPage)
 
   const loadData = () => {
     setLoading(true)
@@ -28,8 +37,10 @@ export function DataGrid() {
 
   const renderBody = () => {
     return (
+      
       <React.Fragment>
-        {items.sort((a, b) => b.id - a.id).map((item, i) => {
+        
+        {currentitem.sort((a, b) => a.id - b.id).map((item, i) => {
           return (
             <tr key={i}>
               <th scope="row" >{item.id}</th>
@@ -43,12 +54,14 @@ export function DataGrid() {
           )
         })}
       </React.Fragment>
+      
     )
   }
 
   const renderTable = () => {
     return (
     <>
+     <Pagination pages = {totalPagesNum} setCurrentPage={setCurrentPage}/>
       <Button onClick={onAdd}>Ekle</Button>
       <table className="table">
         <thead>
