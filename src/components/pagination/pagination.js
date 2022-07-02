@@ -7,7 +7,7 @@ const Pagination = ({pages, setCurrentPage}) => {
   for(let i=1; i<=pages; i++){
     numOfPages.push(i);
 }
-
+//İlk durum olarak 1 belirlenmesi
 const [currentButton, setCurrentButton] = useState(1);
 
 useEffect(() => {
