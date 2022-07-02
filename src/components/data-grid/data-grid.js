@@ -7,15 +7,19 @@ export function DataGrid() {
 
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
-
   const [todo, setTodo] = useState(null)
-
+  //50'şerli sıralama
   const [currentPage, setCurrentPage] = useState(1)
   const [itemPerPage, setitemPerPage] = useState(50)
+  //id, başlık ve duruma usestate 
+  const [orderId, setOrderId] = useState("asc")
+  const [orderTitle, setOrderTitle] = useState("asc")
+  const [orderCompleted, setOrderCompleted] = useState("asc")
+
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [itemPerPage, setitemPerPage])
 
   const indexOfLastitem = currentPage * itemPerPage;
   const indexOfFirstitem = indexOfLastitem - itemPerPage;
@@ -40,7 +44,7 @@ export function DataGrid() {
       
       <React.Fragment>
         
-        {currentitem.sort((a, b) => a.id - b.id).map((item, i) => {
+        {currentitem.map((item, i) => {
           return (
             <tr key={i}>
               <th scope="row" >{item.id}</th>
@@ -58,6 +62,8 @@ export function DataGrid() {
     )
   }
 
+  
+
   const renderTable = () => {
     return (
     <>
@@ -66,9 +72,10 @@ export function DataGrid() {
       <table className="table">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">Başlık</th>
-            <th scope="col">Durum</th>
+            {/* Id, başlık ve duruma click atama && border ve cursor ekledim belirgin olması için */}
+            <th style={{cursor:'pointer', border:'1px solid #0d6efd'}}  onClick={() => sortingId(items.id)} scope="col">Id</th>
+            <th style={{cursor:'pointer', border:'1px solid #0d6efd'}} onClick={() => sortingTitle(items.title)} scope="col">Başlık</th>
+            <th style={{cursor:'pointer', border:'1px solid #0d6efd'}} onClick={() => sortingCompleted(items.completed)} scope="col">Durum</th>
             <th scope="col">Aksiyonlar</th>
           </tr>
         </thead>
@@ -78,6 +85,42 @@ export function DataGrid() {
       </table>
     </>
     )
+  }
+ //Id, başlık ve duruma göre sıralama
+  const sortingId = (col) => {
+    if(orderId === "asc"){
+      const sorted = [...items].sort((a, b) => (a.id > b.id ? -1 : 1))
+      setOrderId("desc");
+      setItems(sorted);
+    }else{
+      const sorted = [...items].sort((a, b) => (a.id > b.id ? 1 : -1))
+      setOrderId("asc");
+      setItems(sorted);
+    }
+  }
+
+  const sortingTitle = (col) => {
+    if(orderTitle === "asc"){
+      const sorted = [...items].sort((a, b) => (a.title > b.title ? -1 : 1))
+      setOrderTitle("desc");
+      setItems(sorted);
+    }else{
+      const sorted = [...items].sort((a, b) => (a.title > b.title ? 1 : -1))
+      setOrderTitle("asc");
+      setItems(sorted);
+    }
+  }
+
+  const sortingCompleted = (col) => {
+    if(orderCompleted === "asc"){
+      const sorted = [...items].sort((a, b) => (a.completed > b.completed ? -1 : 1))
+      setOrderCompleted("desc");
+      setItems(sorted);
+    }else{
+      const sorted = [...items].sort((a, b) => (a.completed > b.completed ? 1 : -1))
+      setOrderCompleted("asc");
+      setItems(sorted);
+    }
   }
 
   const saveChanges = () => {
@@ -95,7 +138,7 @@ export function DataGrid() {
       return
     }
     // update
-    const index = items.findIndex(item => item.id == todo.id)
+    const index = items.findIndex(item => item.id === todo.id)
     setItems(items => {
       items[index] = todo
       return [...items]
@@ -117,7 +160,7 @@ export function DataGrid() {
     if (!status) {
       return
     }
-    const index = items.findIndex(item => item.id == id)
+    const index = items.findIndex(item => item.id === id)
     
     setItems(items => {
       items.splice(index, 1)
